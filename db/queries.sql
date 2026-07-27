@@ -1,59 +1,94 @@
 -- ============================================================================
 -- TICKET-ADV010 — VWAP per instrument per day (window function)
+-- WHAT:    Calculates the Volume-Weighted Average Price (VWAP) per instrument per day
+--          without collapsing rows via GROUP BY.
+-- HOW:     Uses SUM() OVER (PARTITION BY instrument_id, trade_date).
+-- WHY:     Window functions allow us to retain per-row detail (trade_id, price, quantity)
+--          while calculating aggregates over a partition of rows. This is superior to GROUP BY
+--          when we need both the aggregate and the individual row data.
 -- ============================================================================
-SELECT DISTINCT
+SELECT
+    t.id AS trade_id,
+    t.trade_ref,
     t.instrument_id,
     t.trade_date,
+    t.price,
+    t.quantity,
+    (t.price * t.quantity) AS notional,
     SUM(t.price * t.quantity) OVER (PARTITION BY t.instrument_id, t.trade_date)
         / NULLIF(SUM(t.quantity) OVER (PARTITION BY t.instrument_id, t.trade_date), 0)
-            AS vwap
+        AS vwap
 FROM trades t
 WHERE t.deleted_at IS NULL
-  AND t.asset_class = 'EQUITY'
-ORDER BY t.trade_date DESC, t.instrument_id;
+ORDER BY t.trade_date DESC, t.instrument_id, t.created_at;
 
 
 -- ============================================================================
--- TICKET-ADV011 — Recursive CTE: trade lifecycle (execution -> settlement
---                -> recon_break -> resolution)
+-- TICKET-ADV011 — Recursive CTE: trade lifecycle
+-- WHAT:    Rolls up trade lifecycle stages (EXECUTION -> CONFIRMATION -> 
+--          SETTLEMENT -> RECON_BREAK -> RESOLUTION).
+-- HOW:     Uses WITH RECURSIVE and a LATERAL join to traverse dependent tables.
+-- WHY:     PostgreSQL evaluates recursive CTEs by first executing the non-recursive
+--          anchor term, then repeatedly executing the recursive term, appending results 
+--          until no new rows are produced. Infinite recursion is prevented by the
+--          termination guard (WHERE tl.step < 5).
 -- ============================================================================
 WITH RECURSIVE trade_lifecycle AS (
-    -- anchor: every trade in its execution state
-    SELECT
-        t.id           AS trade_id,
-        t.trade_ref,
-        1              AS step,
-        'EXECUTED'     AS state,
-        t.created_at   AS at_ts,
-        NULL::text     AS detail
+    -- Anchor: EXECUTION
+    SELECT 
+        t.id AS trade_id, 
+        t.trade_ref, 
+        1 AS step, 
+        'EXECUTION' AS stage, 
+        t.created_at AS event_time, 
+        t.status AS status
     FROM trades t
     WHERE t.deleted_at IS NULL
 
     UNION ALL
 
-    -- recursive: each subsequent state derived from the previous step
-    SELECT
-        tl.trade_id,
-        tl.trade_ref,
-        tl.step + 1,
-        CASE tl.step
-            WHEN 1 THEN 'CONFIRMED'
-            WHEN 2 THEN 'SETTLED'
-            WHEN 3 THEN 'RECONCILED'
-        END                                          AS state,
-        s.settlement_date::timestamp                  AS at_ts,
-        s.status                                      AS detail
+    -- Recursive step: Traversing the lifecycle tables
+    SELECT 
+        tl.trade_id, 
+        tl.trade_ref, 
+        tl.step + 1 AS step, 
+        next_event.stage, 
+        next_event.event_time, 
+        next_event.status
     FROM trade_lifecycle tl
-    JOIN settlements s ON s.trade_id = tl.trade_id
-    WHERE tl.step < 4
+    JOIN LATERAL (
+        SELECT 'CONFIRMATION' AS stage, modified_at AS event_time, status 
+        FROM trades 
+        WHERE id = tl.trade_id AND tl.step = 1
+        
+        UNION ALL
+        
+        SELECT 'SETTLEMENT', settlement_date::timestamp, status 
+        FROM settlements 
+        WHERE trade_id = tl.trade_id AND tl.step = 2
+        
+        UNION ALL
+        
+        SELECT 'RECON_BREAK', detected_at, status 
+        FROM recon_breaks 
+        WHERE trade_id = tl.trade_id AND tl.step = 3
+        
+        UNION ALL
+        
+        SELECT 'RESOLUTION', resolved_at, resolution_note 
+        FROM recon_breaks 
+        WHERE trade_id = tl.trade_id AND tl.step = 4 AND resolved_at IS NOT NULL
+    ) AS next_event ON true
+    -- Termination guard
+    WHERE tl.step < 5
 )
-SELECT * FROM trade_lifecycle
+SELECT trade_id, step, stage, event_time, status 
+FROM trade_lifecycle 
 ORDER BY trade_id, step;
 
 
 -- ============================================================================
--- ADV008 — REFRESH the daily-summary materialised view (concurrent so it can
---         run while the dashboard is reading it)
+-- ADV008 — REFRESH the daily-summary materialised view (concurrently)
 -- ============================================================================
 REFRESH MATERIALIZED VIEW CONCURRENTLY mv_daily_recon_summary;
 
