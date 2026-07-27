@@ -1,5 +1,3 @@
-# TICKET-ADV006 — ER model (8 entities)
-
 ```mermaid
 erDiagram
     COUNTERPARTIES ||--o{ TRADES : "executes"
@@ -15,6 +13,7 @@ erDiagram
         varchar name
         char lei_code UK
         varchar region
+        timestamp created_at
     }
 
     INSTRUMENTS {
@@ -24,7 +23,7 @@ erDiagram
         varchar asset_class
         char currency
         char isin UK
-        jsonb metadata "ADV009"
+        jsonb metadata "JSONB column"
     }
 
     TRADES {
@@ -38,7 +37,7 @@ erDiagram
         numeric price
         date trade_date "PARTITION KEY (ADV007)"
         varchar status
-        timestamp deleted_at "ADV067 soft delete"
+        timestamp deleted_at
         timestamp created_at
         timestamp modified_at
     }
@@ -54,6 +53,7 @@ erDiagram
     RECON_BREAKS {
         bigint id PK
         bigint trade_id FK
+        bigint recon_job_id FK
         varchar discrepancy_type
         varchar status
         timestamp detected_at
@@ -64,6 +64,7 @@ erDiagram
     RECON_JOBS {
         bigint id PK
         varchar job_id UK
+        bigint triggered_by FK
         date from_date
         date to_date
         varchar status
@@ -79,9 +80,9 @@ erDiagram
         varchar trade_ref
         varchar event_type
         timestamp event_timestamp
-        varchar actor
-        clob before_state
-        clob after_state
+        varchar changed_by "No FK to users"
+        text before_state
+        text after_state
     }
 
     USERS {
