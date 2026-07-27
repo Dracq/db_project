@@ -67,7 +67,10 @@ public final class BondTrade implements TradeType {
 
     @Override public String toString() {
         // TODO(TICKET-ADV030): "BondTrade[ref=..., isin=..., face=... CCY, coupon=..., maturity=..., side=...]"
-        throw new UnsupportedOperationException("TICKET-ADV030");
+        // NOTE: counterpartyId is deliberately omitted to keep routine logs PII-safe.
+        return "BondTrade[ref=%s, isin=%s, face=%s %s, coupon=%s, maturity=%s, side=%s]"
+                .formatted(tradeRef, isin, faceValue.toPlainString(), currency.getCurrencyCode(),
+                        couponRate.toPlainString(), maturityDate, side);
     }
 
     public static final class Builder {
