@@ -53,6 +53,31 @@ class ReconciliationEngineTest {
         assertThat(nullResults).isEmpty();
     }
 
+    @Test
+    void testReconcileByCounterparty_parallelExecution() throws Exception {
+        EquityTrade inCp1 = equity("EQU-20260603-0001", "100.0", "50");
+        EquityTrade extCp1 = equity("EQU-20260603-0001", "100.0", "50");
+        
+        EquityTrade inCp2 = equity("EQU-20260603-0002", "200.0", "10");
+        // missing external for cp2
+
+        java.util.Map<Long, List<TradeType>> internalMap = java.util.Map.of(
+                1L, List.<TradeType>of(inCp1),
+                2L, List.<TradeType>of(inCp2)
+        );
+        java.util.Map<Long, List<TradeType>> externalMap = java.util.Map.of(
+                1L, List.<TradeType>of(extCp1)
+        );
+
+        java.util.concurrent.CompletableFuture<List<ReconResult>> future = 
+                engine.reconcileByCounterparty(internalMap, externalMap, ReconciliationRule.EXACT);
+                
+        List<ReconResult> results = future.get();
+        assertThat(results).hasSize(2);
+        assertThat(results.stream().map(ReconResult::status))
+                .containsExactlyInAnyOrder(ReconResult.Status.MATCHED, ReconResult.Status.BREAK);
+    }
+
     private EquityTrade equity(String ref, String price, String qty) {
         return EquityTrade.builder()
                 .tradeRef(TradeRef.of(ref))
