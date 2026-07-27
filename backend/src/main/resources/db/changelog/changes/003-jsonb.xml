@@ -30,4 +30,14 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="003-jsonb-on-instruments-h2" author="trainer">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="h2"/>
+        </preConditions>
+        <sql>ALTER TABLE instruments ADD COLUMN metadata CLOB DEFAULT '{}' NOT NULL;</sql>
+        <rollback>
+            <sql>ALTER TABLE instruments DROP COLUMN metadata;</sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

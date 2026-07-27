@@ -26,14 +26,36 @@
             <column name="event_type" type="VARCHAR(30)"><constraints nullable="false"/></column>
             <column name="event_timestamp" type="TIMESTAMP"><constraints nullable="false"/></column>
             <column name="actor" type="VARCHAR(100)"/>
-            <column name="before_state" type="CLOB"/>
-            <column name="after_state" type="CLOB"/>
         </createTable>
         <createIndex tableName="audit_log" indexName="idx_audit_log_trade_ref">
             <column name="trade_ref"/>
         </createIndex>
         <rollback>
             <dropTable tableName="audit_log"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="006-add-audit-log-state-postgres" author="trainer">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>ALTER TABLE audit_log ADD COLUMN before_state TEXT;</sql>
+        <sql>ALTER TABLE audit_log ADD COLUMN after_state TEXT;</sql>
+        <rollback>
+            <sql>ALTER TABLE audit_log DROP COLUMN after_state;</sql>
+            <sql>ALTER TABLE audit_log DROP COLUMN before_state;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="006-add-audit-log-state-h2" author="trainer">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="h2"/>
+        </preConditions>
+        <sql>ALTER TABLE audit_log ADD COLUMN before_state VARCHAR(65535);</sql>
+        <sql>ALTER TABLE audit_log ADD COLUMN after_state VARCHAR(65535);</sql>
+        <rollback>
+            <sql>ALTER TABLE audit_log DROP COLUMN after_state;</sql>
+            <sql>ALTER TABLE audit_log DROP COLUMN before_state;</sql>
         </rollback>
     </changeSet>
 
