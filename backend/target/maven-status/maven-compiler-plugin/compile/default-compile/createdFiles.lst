@@ -53,6 +53,7 @@ com/dbtraining/reconx/model/BondTrade$Builder.class
 com/dbtraining/reconx/exception/GlobalExceptionHandler.class
 com/dbtraining/reconx/controller/TradeController.class
 com/dbtraining/reconx/kafka/TradeEventProducer.class
+com/dbtraining/reconx/service/TradeLookupService.class
 com/dbtraining/reconx/security/JwtTokenProvider.class
 com/dbtraining/reconx/model/Trade.class
 com/dbtraining/reconx/model/TradeType.class

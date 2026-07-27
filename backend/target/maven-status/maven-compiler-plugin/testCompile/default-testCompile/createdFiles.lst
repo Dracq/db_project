@@ -6,6 +6,7 @@ com/dbtraining/reconx/model/TradeRefTest.class
 com/dbtraining/reconx/model/TradeEqualityTest.class
 com/dbtraining/reconx/model/FXTradeTest.class
 com/dbtraining/reconx/dto/TradeRequestValidationTest.class
+com/dbtraining/reconx/service/TradeLookupServiceTest.class
 com/dbtraining/reconx/model/ReconciliationRuleTest.class
 com/dbtraining/reconx/model/DerivativeTradeTest.class
 com/dbtraining/reconx/exception/ReconExceptionTest.class

@@ -59,4 +59,5 @@
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/main/java/com/dbtraining/reconx/service/ReconSummaryCollector.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/main/java/com/dbtraining/reconx/service/ReconciliationEngine.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/main/java/com/dbtraining/reconx/service/TradeAnalyticsService.java
+/media/abhijit/9E46A14F46A128CB/db_project/backend/src/main/java/com/dbtraining/reconx/service/TradeLookupService.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/main/java/com/dbtraining/reconx/service/TradeService.java
