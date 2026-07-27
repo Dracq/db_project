@@ -11,5 +11,6 @@
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/model/TradeRefTest.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/model/TradeToStringTest.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/model/TradeTypeOrderingTest.java
+/media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/service/ReconSummaryCollectorTest.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/service/ReconciliationEngineTest.java
 /media/abhijit/9E46A14F46A128CB/db_project/backend/src/test/java/com/dbtraining/reconx/service/TradeAnalyticsServiceTest.java

@@ -78,6 +78,29 @@ class ReconciliationEngineTest {
                 .containsExactlyInAnyOrder(ReconResult.Status.MATCHED, ReconResult.Status.BREAK);
     }
 
+    @Test
+    void testReconcile_allMismatched_summaryReportsAllBroken() {
+        EquityTrade in1 = equity("EQU-20260603-0001", "100.0", "50");
+        EquityTrade in2 = equity("EQU-20260603-0002", "100.0", "50");
+        EquityTrade in3 = equity("EQU-20260603-0003", "100.0", "50");
+        
+        EquityTrade ex1 = equity("EQU-20260603-0001", "200.0", "50"); // mismatched price
+        EquityTrade ex2 = equity("EQU-20260603-0002", "200.0", "50"); // mismatched price
+        EquityTrade ex3 = equity("EQU-20260603-0003", "200.0", "50"); // mismatched price
+
+        List<ReconResult> results = engine.reconcile(
+                List.<TradeType>of(in1, in2, in3), 
+                List.<TradeType>of(ex1, ex2, ex3), 
+                ReconciliationRule.EXACT
+        );
+
+        ReconSummary summary = results.stream().collect(new ReconSummaryCollector());
+        
+        assertThat(summary.matched()).isEqualTo(0);
+        assertThat(summary.broken()).isEqualTo(3);
+        assertThat(summary.total()).isEqualTo(3);
+    }
+
     private EquityTrade equity(String ref, String price, String qty) {
         return EquityTrade.builder()
                 .tradeRef(TradeRef.of(ref))
