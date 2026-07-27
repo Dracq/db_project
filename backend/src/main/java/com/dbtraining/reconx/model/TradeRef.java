@@ -29,6 +29,14 @@ public record TradeRef(String value) {
         }
     }
 
+    /**
+     * Create a validated reference from its external string representation.
+     *
+     * @param value reference in {@code AAA-YYYYMMDD-NNNN} form.
+     * @return the strongly typed immutable reference.
+     * @throws NullPointerException if the value is absent.
+     * @throws IllegalArgumentException if the reference does not match the platform format.
+     */
     public static TradeRef of(String value) {
         return new TradeRef(value);
     }

@@ -92,6 +92,13 @@ public final class BondTrade implements TradeType {
         public Builder tradeDate(LocalDate v)      { this.tradeDate = v; return this; }
         public Builder counterpartyId(long v)      { this.counterpartyId = v; return this; }
 
+        /**
+         * Build a validated immutable bond trade.
+         *
+         * @return a non-null trade with a valid ISIN and post-trade maturity.
+         * @throws NullPointerException if a required field was not supplied.
+         * @throws IllegalStateException if bond-specific commercial invariants are violated.
+         */
         public BondTrade build() {
             Objects.requireNonNull(tradeRef, "tradeRef");
             Objects.requireNonNull(isin, "isin");

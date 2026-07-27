@@ -92,6 +92,13 @@ public final class FXTrade implements TradeType {
         public Builder tradeDate(LocalDate v)      { this.tradeDate = v; return this; }
         public Builder counterpartyId(long v)      { this.counterpartyId = v; return this; }
 
+        /**
+         * Build a validated immutable FX trade.
+         *
+         * @return a non-null trade whose base and quote currencies differ.
+         * @throws NullPointerException if a required field was not supplied.
+         * @throws IllegalStateException if currencies match or the notional or FX rate is not positive.
+         */
         public FXTrade build() {
             Objects.requireNonNull(tradeRef, "tradeRef");
             Objects.requireNonNull(ccy1, "ccy1");

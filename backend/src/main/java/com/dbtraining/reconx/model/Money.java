@@ -31,6 +31,15 @@ public record Money(BigDecimal amount, Currency currency) {
         }
     }
 
+    /**
+     * Parse a decimal amount and ISO-4217 currency code into a money value.
+     *
+     * @param amount decimal representation accepted by {@link BigDecimal}.
+     * @param currencyCode ISO-4217 code resolved by {@link Currency#getInstance(String)}.
+     * @return a non-negative monetary value.
+     * @throws NumberFormatException if the amount is not decimal text.
+     * @throws IllegalArgumentException if the currency is unknown or the amount is negative.
+     */
     public static Money of(String amount, String currencyCode) {
         return new Money(new BigDecimal(amount), Currency.getInstance(currencyCode));
     }
@@ -39,7 +48,14 @@ public record Money(BigDecimal amount, Currency currency) {
         return new Money(amount, Currency.getInstance(currencyCode));
     }
 
-    /** Add another Money of the same currency. Throws on currency mismatch. */
+    /**
+     * Add a monetary value in the same currency.
+     *
+     * @param other addend with the same ISO currency as this value.
+     * @return a new money value; neither input is modified.
+     * @throws NullPointerException if the addend is absent.
+     * @throws IllegalArgumentException if currencies differ.
+     */
     public Money plus(Money other) {
         Objects.requireNonNull(other, "other");
         if (!currency.equals(other.currency)) {
@@ -50,6 +66,14 @@ public record Money(BigDecimal amount, Currency currency) {
         return new Money(amount.add(other.amount), currency);
     }
 
+    /**
+     * Scale this amount while retaining its currency.
+     *
+     * @param multiplier factor applied using {@link BigDecimal#multiply(BigDecimal)}.
+     * @return the scaled non-negative money value.
+     * @throws NullPointerException if the multiplier is absent.
+     * @throws IllegalArgumentException if the result is negative.
+     */
     public Money times(BigDecimal multiplier) {
         return new Money(amount.multiply(Objects.requireNonNull(multiplier, "multiplier")), currency);
     }

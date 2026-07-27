@@ -34,6 +34,16 @@ public final class TradeFactory {
      *      helper below.
      *   3. The switch must be exhaustive — every TradeType.AssetClass case handled.
      */
+    /**
+     * Construct the typed trade selected by an external asset-class discriminator.
+     *
+     * @param assetClass case-insensitive name of the supported asset class.
+     * @param p untyped payload containing all fields required by that asset class.
+     * @return a validated concrete trade instance.
+     * @throws NullPointerException if the discriminator, payload, or required payload field is absent.
+     * @throws IllegalArgumentException if the asset class or a parsed domain value is invalid.
+     * @throws ClassCastException if a payload value has the wrong runtime type.
+     */
     public static TradeType create(String assetClass, Map<String, Object> p) {
         Objects.requireNonNull(assetClass, "assetClass");
         Objects.requireNonNull(p, "payload");
