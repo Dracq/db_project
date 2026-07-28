@@ -48,6 +48,7 @@ public class TradeController {
         this.mapper = mapper;
     }
 
+    // TICKET-ADV063: GET /api/v1/trades — paginated, filterable, sortable list
     @GetMapping
     @Operation(summary = "List trades — paginated, filterable, sortable")
     public PagedResponse<TradeResponse> list(
