@@ -192,7 +192,11 @@ public class TradeService {
     public Page<Trade> list(LocalDate from, LocalDate to, String status, Long counterpartyId, Pageable pageable) {
         com.dbtraining.reconx.repository.entity.TradeStatus tradeStatus = null;
         if (status != null && !status.isBlank()) {
-            tradeStatus = com.dbtraining.reconx.repository.entity.TradeStatus.valueOf(status);
+            try {
+                tradeStatus = com.dbtraining.reconx.repository.entity.TradeStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid status filter: " + status);
+            }
         }
         
         Specification<Trade> spec = Specification.where(tradeDateBetween(from, to))

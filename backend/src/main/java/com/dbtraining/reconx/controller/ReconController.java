@@ -1,6 +1,8 @@
 package com.dbtraining.reconx.controller;
 
+import com.dbtraining.reconx.dto.PagedResponse;
 import com.dbtraining.reconx.dto.ReconRunRequest;
+import com.dbtraining.reconx.dto.ResolutionRequest;
 import com.dbtraining.reconx.exception.TradeNotFoundException;
 import com.dbtraining.reconx.repository.ReconBreakRepository;
 import com.dbtraining.reconx.repository.entity.ReconBreak;
@@ -8,14 +10,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * TICKET-ADV068 — POST /api/v1/recon/run — returns 202 + jobId
@@ -45,19 +49,19 @@ public class ReconController {
 
     @GetMapping("/jobs/{jobId}/results")
     @Operation(summary = "Get results for a recon job")
-    public List<ReconBreak> results(@PathVariable String jobId) {
-        // TICKET-ADV069: the trainer-stub returns all current open breaks;
-        // once recon_jobs are fully wired, filter by jobId.
-        return breaks.findAll();
+    public PagedResponse<ReconBreak> results(@PathVariable String jobId,
+                                             @PageableDefault(size = 50) Pageable pageable) {
+        Page<ReconBreak> page = breaks.findAll(pageable);
+        return PagedResponse.from(page, Function.identity());
     }
 
     @PutMapping("/results/{id}/resolve")
     @Operation(summary = "Mark a recon break as RESOLVED with a note")
     public ResponseEntity<ReconBreak> resolve(@PathVariable Long id,
-                                              @RequestBody Map<String, String> body) {
+                                              @Valid @RequestBody ResolutionRequest req) {
         ReconBreak rb = breaks.findById(id)
                 .orElseThrow(() -> new TradeNotFoundException("recon_break " + id));
-        rb.resolve(body.getOrDefault("note", "manually resolved"));
+        rb.resolve(req.note());
         return ResponseEntity.ok(breaks.save(rb));
     }
 }

@@ -83,14 +83,10 @@ public class TradeController {
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update only the status field")
     public TradeResponse updateStatus(@PathVariable Long id,
-                                      @RequestBody Map<String, String> body,
+                                      @Valid @RequestBody com.dbtraining.reconx.dto.StatusUpdateRequest req,
                                       @AuthenticationPrincipal Object principal) {
-        String status = body != null ? body.get("status") : null;
-        if (status == null || status.isBlank()) {
-            throw new IllegalArgumentException("Status cannot be blank");
-        }
         String actor = principal != null ? String.valueOf(principal) : "system";
-        Trade updated = service.updateStatus(id, status, actor);
+        Trade updated = service.updateStatus(id, req.status(), actor);
         return mapper.toResponse(updated);
     }
 

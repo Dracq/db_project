@@ -10,7 +10,8 @@ public record PagedResponse<T>(
     int page,
     int size,
     long totalElements,
-    int totalPages
+    int totalPages,
+    boolean last
 ) {
     public static <E, T> PagedResponse<T> of(Page<E> page, Function<E, T> mapper) {
         return new PagedResponse<>(
@@ -18,7 +19,16 @@ public record PagedResponse<T>(
             page.getNumber(),
             page.getSize(),
             page.getTotalElements(),
-            page.getTotalPages()
+            page.getTotalPages(),
+            page.isLast()
         );
+    }
+
+    public static <S, T> PagedResponse<T> from(Page<S> page, Function<S, T> mapper) {
+        return of(page, mapper);
+    }
+
+    public List<T> getContent() {
+        return items;
     }
 }
