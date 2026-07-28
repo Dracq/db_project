@@ -102,4 +102,14 @@ public class TradeController {
         service.softDelete(id, actor);
         return ResponseEntity.noContent().build();
     }
+
+    @Deprecated(since = "v1.4.0", forRemoval = true)
+    @GetMapping(value = "/old-search", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> oldSearch(jakarta.servlet.http.HttpServletResponse response) {
+        response.setHeader("Deprecation", "true");
+        response.setHeader("Sunset", "Sat, 1 Jul 2026 00:00:00 GMT");
+        response.setHeader("Link", "</api/v1/trades?status=...>; rel=\"successor-version\"");
+        return ResponseEntity.status(org.springframework.http.HttpStatus.GONE).build();
+    }
 }
+

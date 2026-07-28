@@ -1,7 +1,9 @@
 package com.dbtraining.reconx.controller;
 
+import com.dbtraining.reconx.dto.TradeMapper;
 import com.dbtraining.reconx.dto.TradeRequest;
 import com.dbtraining.reconx.dto.TradeResponse;
+import com.dbtraining.reconx.repository.entity.Trade;
 import com.dbtraining.reconx.service.TradeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ class TradeControllerWebMvcTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @MockBean  private TradeService tradeService;
+    @MockBean  private TradeMapper tradeMapper;
 
     private TradeRequest validRequest() {
         return new TradeRequest(
@@ -45,7 +48,11 @@ class TradeControllerWebMvcTest {
     @WithMockUser(roles = "TRADER")
     void testCreateTrade_authenticated_returns201() throws Exception {
         Instant now = Instant.now();
-        when(tradeService.create(any())).thenReturn(
+        Trade trade = new Trade();
+        trade.setTradeRef("TRD-20260315-9999");
+
+        when(tradeService.create(any(), any())).thenReturn(trade);
+        when(tradeMapper.toResponse(any())).thenReturn(
                 new TradeResponse(
                         42L,
                         "TRD-20260315-9999",
@@ -78,5 +85,15 @@ class TradeControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "VIEWER")
+    void testCreateTrade_viewerRole_returns403() throws Exception {
+        mockMvc.perform(post("/api/v1/trades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validRequest()))
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isForbidden());
     }
 }
