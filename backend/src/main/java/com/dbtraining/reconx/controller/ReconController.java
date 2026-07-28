@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,12 @@ public class ReconController {
     @PostMapping("/run")
     @Operation(summary = "Trigger a reconciliation job (async)")
     public ResponseEntity<Map<String, String>> runRecon(@Valid @RequestBody ReconRunRequest req) {
-        // TODO(TICKET-ADV068): generate a jobId, write a row to recon_jobs, and
-        //   return 202 Accepted with {"jobId": ..., "status": "QUEUED"}. A
-        //   worker (Day 6 / Kafka consumer) picks the job up asynchronously.
-        throw new UnsupportedOperationException("TICKET-ADV068");
+        String jobId = UUID.randomUUID().toString();
+        URI location = URI.create("/api/v1/recon/jobs/" + jobId + "/results");
+        return ResponseEntity
+                .accepted()
+                .location(location)
+                .body(Map.of("jobId", jobId, "status", "QUEUED"));
     }
 
     @GetMapping("/jobs/{jobId}/results")

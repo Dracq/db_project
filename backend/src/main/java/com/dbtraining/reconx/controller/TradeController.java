@@ -75,9 +75,9 @@ public class TradeController {
     @Operation(summary = "Full update of a trade")
     public TradeResponse update(@PathVariable Long id, @Valid @RequestBody TradeRequest req,
                                 @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV065): delegate to service.update(id, req, actor) and
-        //   map the updated entity through mapper.toResponse.
-        throw new UnsupportedOperationException("TICKET-ADV065");
+        String actor = principal != null ? String.valueOf(principal) : "system";
+        Trade updated = service.update(id, req, actor);
+        return mapper.toResponse(updated);
     }
 
     @PatchMapping("/{id}/status")
@@ -85,16 +85,21 @@ public class TradeController {
     public TradeResponse updateStatus(@PathVariable Long id,
                                       @RequestBody Map<String, String> body,
                                       @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV066): read body.get("status") and call
-        //   service.updateStatus(id, status, actor). Return mapper.toResponse(saved).
-        throw new UnsupportedOperationException("TICKET-ADV066");
+        String status = body != null ? body.get("status") : null;
+        if (status == null || status.isBlank()) {
+            throw new IllegalArgumentException("Status cannot be blank");
+        }
+        String actor = principal != null ? String.valueOf(principal) : "system";
+        Trade updated = service.updateStatus(id, status, actor);
+        return mapper.toResponse(updated);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Soft delete (sets deleted_at)")
     public ResponseEntity<Void> delete(@PathVariable Long id,
                                        @AuthenticationPrincipal Object principal) {
-        // TODO(TICKET-ADV067): service.softDelete(id, actor); return 204 No Content.
-        throw new UnsupportedOperationException("TICKET-ADV067");
+        String actor = principal != null ? String.valueOf(principal) : "system";
+        service.softDelete(id, actor);
+        return ResponseEntity.noContent().build();
     }
 }
