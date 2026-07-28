@@ -27,11 +27,13 @@ public interface TradeRepository
         SELECT t FROM Trade t
         WHERE t.tradeDate BETWEEN :from AND :to
           AND (:status IS NULL OR t.status = :status)
+          AND (:counterpartyId IS NULL OR t.counterparty.id = :counterpartyId)
         """)
-    Page<Trade> findByFilters(@Param("from") LocalDate from,
-                              @Param("to") LocalDate to,
-                              @Param("status") String status,
-                              Pageable pageable);
-
-    long countByStatus(String status);
+    Page<Trade> findByFilters(
+        @Param("from")           LocalDate from,
+        @Param("to")             LocalDate to,
+        @Param("status")         com.dbtraining.reconx.repository.entity.TradeStatus status,
+        @Param("counterpartyId") Long counterpartyId,
+        Pageable pageable
+    );
 }

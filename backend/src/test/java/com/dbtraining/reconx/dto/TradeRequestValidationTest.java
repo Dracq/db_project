@@ -20,7 +20,7 @@ class TradeRequestValidationTest {
     @Test
     void negativeQuantityHasOnePositiveViolation() {
         TradeRequest request = new TradeRequest(
-                "EQU-20260603-0001", 1L, 2L, "EQUITY", "BUY",
+                "EQU-20260603-0001", 1L, 2L,
                 new BigDecimal("-1"), new BigDecimal("100"), LocalDate.of(2026, 6, 3));
 
         assertThat(validator.validate(request))
@@ -32,7 +32,7 @@ class TradeRequestValidationTest {
     @Test
     void invalidTradeReferenceUsesPlatformPatternMessage() {
         TradeRequest request = new TradeRequest(
-                "foo", 1L, 2L, "EQUITY", "BUY",
+                "foo", 1L, 2L,
                 BigDecimal.ONE, new BigDecimal("100"), LocalDate.of(2026, 6, 3));
 
         assertThat(validator.validate(request))
@@ -43,7 +43,7 @@ class TradeRequestValidationTest {
 
     private TradeRequest validRequest() {
         return new TradeRequest(
-                "EQU-20260603-0001", 1L, 2L, "EQUITY", "BUY",
+                "EQU-20260603-0001", 1L, 2L,
                 BigDecimal.ONE, new BigDecimal("100"), LocalDate.of(2026, 6, 3));
     }
 }

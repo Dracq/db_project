@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TradeMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">reconx</a> &gt; <a href="index.source.html" class="el_package">com.dbtraining.reconx.dto</a> &gt; <span class="el_source">TradeMapper.java</span></div><h1>TradeMapper.java</h1><pre class="source lang-java linenums">package com.dbtraining.reconx.dto;
+
+import com.dbtraining.reconx.repository.entity.Trade;
+import org.mapstruct.*;
+
+@Mapper(componentModel = &quot;spring&quot;,
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface TradeMapper {
+
+    @Mapping(source = &quot;counterparty.id&quot;,       target = &quot;counterpartyId&quot;)
+    @Mapping(source = &quot;counterparty.name&quot;,     target = &quot;counterpartyName&quot;)
+    @Mapping(source = &quot;instrument.id&quot;,         target = &quot;instrumentId&quot;)
+    @Mapping(source = &quot;instrument.symbol&quot;,     target = &quot;instrumentSymbol&quot;)
+    @Mapping(source = &quot;status&quot;,                target = &quot;status&quot;,
+             qualifiedByName = &quot;statusToString&quot;)
+    TradeResponse toResponse(Trade trade);
+
+    @Mapping(target = &quot;id&quot;,            ignore = true)
+    @Mapping(target = &quot;counterparty&quot;,  ignore = true)
+    @Mapping(target = &quot;instrument&quot;,    ignore = true)
+    @Mapping(target = &quot;status&quot;,        ignore = true)
+    @Mapping(target = &quot;createdAt&quot;,     ignore = true)
+    @Mapping(target = &quot;modifiedAt&quot;,    ignore = true)
+    @Mapping(target = &quot;deletedAt&quot;,     ignore = true)
+    @Mapping(target = &quot;assetClass&quot;,    ignore = true)
+    @Mapping(target = &quot;side&quot;,          ignore = true)
+    Trade toEntity(TradeRequest req);
+
+    @Named(&quot;statusToString&quot;)
+    static String statusToString(Enum&lt;?&gt; status) {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        return status == null ? null : status.name();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

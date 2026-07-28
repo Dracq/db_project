@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- ============================================================================
- TICKET-ADV048 — Multi-module Maven (TRAINER COPY: single-module for runnability)
- WHAT:    The Advanced track teaches multi-module Maven (api/service/repository/
-          domain/common). In the TRAINER COPY we ship a single runnable module
-          to keep the answer key easy to boot. The trainer guide day4 shows the
-          multi-module split.
- HOW:     Standard Spring Boot 3 parent + java.version=25.
- WHY:     Students need a project that runs in one `mvn spring-boot:run`. Once
-          they pass Day 4 they can split this into modules and re-import.
- OBSERVE: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` boots cleanly,
-          Liquibase migrations apply, /actuator/health returns UP.
- ============================================================================
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0

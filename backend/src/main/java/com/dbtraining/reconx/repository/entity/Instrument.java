@@ -1,12 +1,12 @@
 package com.dbtraining.reconx.repository.entity;
 
 import jakarta.persistence.*;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.Type;
 
-/**
- * TICKET-ADV051 — JPA entity Instrument. JSONB metadata column wired via
- * the Hypersistence Utils JsonBinaryType on Postgres; H2 stores it as a
- * plain CLOB via the dialect translation (acceptable for dev).
- */
+import java.util.HashMap;
+import java.util.Map;
+
 @Entity
 @Table(name = "instruments")
 public class Instrument {
@@ -21,21 +21,30 @@ public class Instrument {
     @Column(nullable = false, length = 200)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "asset_class", nullable = false, length = 20)
-    private String assetClass;
+    private AssetClass assetClass;
 
     @Column(nullable = false, length = 3)
     private String currency;
 
-    @Column(length = 12)
-    private String isin;
+    @Type(JsonBinaryType.class)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> metadata = new HashMap<>();
 
     public Instrument() {}
 
     public Long getId()         { return id; }
     public String getSymbol()   { return symbol; }
     public String getName()     { return name; }
-    public String getAssetClass(){ return assetClass; }
+    public AssetClass getAssetClass(){ return assetClass; }
     public String getCurrency() { return currency; }
-    public String getIsin()     { return isin; }
+    public Map<String, Object> getMetadata() { return metadata; }
+    
+    public void setId(Long v)           { this.id = v; }
+    public void setSymbol(String v)     { this.symbol = v; }
+    public void setName(String v)       { this.name = v; }
+    public void setAssetClass(AssetClass v) { this.assetClass = v; }
+    public void setCurrency(String v)   { this.currency = v; }
+    public void setMetadata(Map<String, Object> v) { this.metadata = v; }
 }

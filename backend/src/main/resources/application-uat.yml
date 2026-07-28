@@ -1,18 +1,17 @@
-# =============================================================================
-# TICKET-ADV049 — uat profile: PostgreSQL on docker-compose
-# =============================================================================
 spring:
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:reconx}
-    username: ${POSTGRES_USER:reconx_user}
-    password: ${POSTGRES_PASSWORD:reconx_pass}
+    url: jdbc:postgresql://localhost:5432/reconx_uat
+    username: reconx_uat
+    password: reconx_uat
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20
       connection-timeout: 5000
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
     properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
       hibernate.jdbc.batch_size: 50
 
 logging:

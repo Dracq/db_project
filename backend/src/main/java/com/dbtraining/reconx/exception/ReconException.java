@@ -14,6 +14,27 @@ package com.dbtraining.reconx.exception;
  * ============================================================================
  */
 public abstract class ReconException extends RuntimeException {
-    protected ReconException(String message) { super(message); }
-    protected ReconException(String message, Throwable cause) { super(message, cause); }
+    private String reconBreakId;
+
+    protected ReconException(String message) { 
+        super(message); 
+    }
+    
+    protected ReconException(String message, Throwable cause) { 
+        super(message, cause); 
+    }
+
+    protected ReconException(String message, String reconBreakId) {
+        super(message);
+        this.reconBreakId = reconBreakId;
+    }
+
+    protected ReconException(String message, Throwable cause, String reconBreakId) {
+        super(message, cause);
+        this.reconBreakId = reconBreakId;
+    }
+
+    public String getReconBreakId() {
+        return reconBreakId;
+    }
 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Trade.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">reconx</a> &gt; <a href="index.source.html" class="el_package">com.dbtraining.reconx.repository.entity</a> &gt; <span class="el_source">Trade.java</span></div><h1>Trade.java</h1><pre class="source lang-java linenums">package com.dbtraining.reconx.repository.entity;
+
+import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Objects;
+import org.hibernate.envers.Audited;
+
+@Entity
+@Table(name = &quot;trades&quot;, indexes = {
+    @Index(name = &quot;idx_trades_trade_date&quot;, columnList = &quot;trade_date&quot;),
+    @Index(name = &quot;idx_trades_status&quot;, columnList = &quot;status&quot;)
+})
+@EntityListeners(AuditingEntityListener.class)
+@Audited
+@SQLRestriction(&quot;deleted_at IS NULL&quot;)
+public class Trade {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = &quot;trade_ref&quot;, nullable = false, unique = true, length = 30)
+    private String tradeRef;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;instrument_id&quot;)
+    private Instrument instrument;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;counterparty_id&quot;)
+    private Counterparty counterparty;
+
+    @Column(name = &quot;asset_class&quot;, nullable = false, length = 20)
+    private String assetClass;
+
+    @Column(nullable = false, length = 4)
+    private String side;
+
+    @Column(nullable = false, precision = 18, scale = 4)
+    private BigDecimal quantity;
+
+    @Column(nullable = false, precision = 18, scale = 4)
+    private BigDecimal price;
+
+    @Column(name = &quot;trade_date&quot;, nullable = false)
+    private LocalDate tradeDate;
+
+<span class="fc" id="L55">    @Enumerated(EnumType.STRING)</span>
+    @Column(nullable = false, length = 20)
+    private TradeStatus status = TradeStatus.PENDING;
+
+    @Column(name = &quot;deleted_at&quot;)
+    private Instant deletedAt;
+
+    @CreatedDate
+    @Column(name = &quot;created_at&quot;, nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = &quot;modified_at&quot;)
+    private Instant modifiedAt;
+
+<span class="fc" id="L70">    public Trade() {}</span>
+
+    /** Soft-delete: set deletedAt so @SQLRestriction filters this out. */
+<span class="nc" id="L73">    public void softDelete() { this.deletedAt = Instant.now(); }</span>
+
+<span class="nc" id="L75">    public Long getId()                  { return id; }</span>
+<span class="nc" id="L76">    public String getTradeRef()          { return tradeRef; }</span>
+<span class="nc" id="L77">    public Instrument getInstrument()    { return instrument; }</span>
+<span class="fc" id="L78">    public Counterparty getCounterparty(){ return counterparty; }</span>
+<span class="nc" id="L79">    public String getAssetClass()        { return assetClass; }</span>
+<span class="nc" id="L80">    public String getSide()              { return side; }</span>
+<span class="nc" id="L81">    public BigDecimal getQuantity()      { return quantity; }</span>
+<span class="nc" id="L82">    public BigDecimal getPrice()         { return price; }</span>
+<span class="nc" id="L83">    public LocalDate getTradeDate()      { return tradeDate; }</span>
+<span class="nc" id="L84">    public TradeStatus getStatus()            { return status; }</span>
+<span class="nc" id="L85">    public Instant getDeletedAt()        { return deletedAt; }</span>
+<span class="nc" id="L86">    public Instant getCreatedAt()        { return createdAt; }</span>
+<span class="nc" id="L87">    public Instant getModifiedAt()       { return modifiedAt; }</span>
+
+<span class="fc" id="L89">    public void setTradeRef(String v)         { this.tradeRef = v; }</span>
+<span class="nc" id="L90">    public void setInstrument(Instrument v)   { this.instrument = v; }</span>
+<span class="fc" id="L91">    public void setCounterparty(Counterparty v){ this.counterparty = v; }</span>
+<span class="nc" id="L92">    public void setAssetClass(String v)       { this.assetClass = v; }</span>
+<span class="nc" id="L93">    public void setSide(String v)             { this.side = v; }</span>
+<span class="nc" id="L94">    public void setQuantity(BigDecimal v)     { this.quantity = v; }</span>
+<span class="nc" id="L95">    public void setPrice(BigDecimal v)        { this.price = v; }</span>
+<span class="nc" id="L96">    public void setTradeDate(LocalDate v)     { this.tradeDate = v; }</span>
+<span class="nc" id="L97">    public void setStatus(TradeStatus v)      { this.status = v; }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (!(o instanceof Trade other)) return false;</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">        return id != null &amp;&amp; id.equals(other.id);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L108">        return Objects.hash(id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
