@@ -59,7 +59,6 @@ public class TradeService {
         if (tradeRepo.findByTradeRef(req.tradeRef()).isPresent()) {
             throw new DuplicateTradeRefException(req.tradeRef());
         }
-
         var inst = instRepo.findById(req.instrumentId())
                 .orElseThrow(() -> new TradeNotFoundException("Instrument id=" + req.instrumentId()));
         var cp = cpRepo.findById(req.counterpartyId())
@@ -72,8 +71,10 @@ public class TradeService {
         trade.setQuantity(req.quantity());
         trade.setPrice(req.price());
         trade.setTradeDate(req.tradeDate());
-        trade.setAssetClass("EQUITY");
-        trade.setSide("BUY");
+        
+        // Day 5 fixes and refactoring from develop
+        trade.setAssetClass(req.assetClass() != null ? req.assetClass() : "EQUITY");
+        trade.setSide(req.side() != null ? req.side() : "BUY");
         trade.setStatus(com.dbtraining.reconx.repository.entity.TradeStatus.PENDING);
 
         Trade saved = tradeRepo.save(trade);
@@ -83,20 +84,15 @@ public class TradeService {
             metrics.recordTradeValue(saved.getQuantity().multiply(saved.getPrice()).doubleValue());
         }
 
-        try {
-            events.publish(new TradeEvent(
-                    UUID.randomUUID(),
-                    saved.getTradeRef(),
-                    TradeEvent.EventType.TRADE_CREATED,
-                    Instant.now(),
-                    actor,
-                    null,
-                    null
-            ));
-        } catch (UnsupportedOperationException ignored) {
-            // Kafka event producer not yet wired (TICKET-ADV129)
-        }
-
+        events.publish(new TradeEvent(
+                UUID.randomUUID(),
+                saved.getTradeRef(),
+                TradeEvent.EventType.TRADE_CREATED,
+                Instant.now(),
+                actor,
+                null,
+                "{\"status\": \"PENDING\"}"
+        ));
         return saved;
     }
 

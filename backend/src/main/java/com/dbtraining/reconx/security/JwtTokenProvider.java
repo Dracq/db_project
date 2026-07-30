@@ -11,16 +11,17 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
+import io.jsonwebtoken.Jwts;
 
 /**
  * ============================================================================
- * TICKET-ADV072 — JwtTokenProvider (jjwt 0.12.x API)
+ * TICKET-ADV072 — JWT Token Provider (io.jsonwebtoken:jjwt)
  *
- * WHAT:    Generates + validates HS256-signed JWTs.
- * HOW:     Subject = email. Role goes into a custom "role" claim that
- *          {@link JwtAuthenticationFilter} turns into a GrantedAuthority.
- * WHY:     Self-contained (no DB hit per request) and stateless (no session).
- * OBSERVE: Decode any token at jwt.io with the configured secret.
+ * WHAT:    Generates and validates JWTs for authenticated sessions.
+ * HOW:     Uses standard JJWT builder/parser. Keys are HMAC-SHA-256 derived
+ *          from the application.yml secret.
+ * WHY:     Stateless auth allows backend scaling without sticky sessions or
+ *          Redis session stores.
  * ============================================================================
  */
 @Component
@@ -30,9 +31,14 @@ public class JwtTokenProvider {
     private final long expirationMinutes;
     private final String issuer;
 
-    public JwtTokenProvider(@Value("${reconx.security.jwt.secret}") String secret,
-                            @Value("${reconx.security.jwt.expiration-minutes}") long expirationMinutes,
-                            @Value("${reconx.security.jwt.issuer}") String issuer) {
+    public JwtTokenProvider(
+            @Value("${reconx.security.jwt.secret}") String secret,
+            @Value("${reconx.security.jwt.expiration-minutes}") long expirationMinutes,
+            @Value("${reconx.security.jwt.issuer}") String issuer) {
+        // Need at least 256 bits (32 bytes) for HS256
+        if (secret.length() < 32) {
+            throw new IllegalStateException("JWT secret must be at least 32 characters long for HS256");
+        }
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMinutes = expirationMinutes;
         this.issuer = issuer;

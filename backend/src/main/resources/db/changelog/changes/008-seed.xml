@@ -96,4 +96,22 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="008-seed-reset-sequences-h2" author="antigravity" context="!prod" dbms="h2">
+        <sql>
+            ALTER TABLE trades ALTER COLUMN id RESTART WITH 1000;
+            ALTER TABLE counterparties ALTER COLUMN id RESTART WITH 1000;
+            ALTER TABLE instruments ALTER COLUMN id RESTART WITH 1000;
+            ALTER TABLE users ALTER COLUMN id RESTART WITH 1000;
+        </sql>
+    </changeSet>
+
+    <changeSet id="008-seed-reset-sequences-postgres" author="antigravity" context="!prod" dbms="postgresql">
+        <sql>
+            SELECT setval(pg_get_serial_sequence('trades', 'id'), COALESCE((SELECT MAX(id) + 1 FROM trades), 1), false);
+            SELECT setval(pg_get_serial_sequence('counterparties', 'id'), COALESCE((SELECT MAX(id) + 1 FROM counterparties), 1), false);
+            SELECT setval(pg_get_serial_sequence('instruments', 'id'), COALESCE((SELECT MAX(id) + 1 FROM instruments), 1), false);
+            SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) + 1 FROM users), 1), false);
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

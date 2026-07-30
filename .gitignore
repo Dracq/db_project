@@ -37,3 +37,10 @@ build/
 .classpath
 .project
 .settings/
+
+# Frontend
+frontend/node_modules/
+node_modules/
+
+# Tools
+tools/
