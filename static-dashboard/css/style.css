@@ -1,39 +1,75 @@
 /* ============================================================================
    TICKET-ADV098 — Flexbox layout (sidebar, header, 3-col main, footer)
-   TICKET-ADV099 / ADV100 — CSS custom properties + dark theme via data-theme
+   TICKET-ADV099 — CSS custom properties (design tokens)
+   TICKET-ADV100 — Dark theme via data-theme
    TICKET-ADV101 / ADV102 — animations (fade-in, slide-in, pulse)
    TICKET-ADV103 — responsive breakpoints (desktop -> tablet -> mobile)
    BEM naming: block__element--modifier
    ============================================================================ */
 :root {
-  --color-primary: #003366;
-  --color-gold:    #C8A951;
-  --color-slate:   #2E5FA3;
-  --color-success: #28a745;
-  --color-warning: #ffc107;
-  --color-danger:  #dc3545;
-  --color-bg:      #ffffff;
-  --color-text:    #1a1a1a;
-  --color-surface: #f5f5f5;
-  --color-border:  #d4d4d4;
-  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --radius:  4px;
+  /* Brand & Status Colors */
+  --color-primary:    #003366;
+  --color-primary-2:  #002244;
+  --color-gold:       #C8A951;
+  --color-slate:      #2E5FA3;
+  --color-success:    #28a745;
+  --color-warning:    #ffc107;
+  --color-danger:     #dc3545;
+
+  /* Surfaces & Text */
+  --color-bg:         #ffffff;
+  --color-bg-alt:     #f8f9fa;
+  --color-text:       #1a1a1a;
+  --color-text-muted: #6c757d;
+  --color-surface:    #f5f5f5;
+  --color-border:     #d4d4d4;
+  --color-white:      #ffffff;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Typography */
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+
+  /* Borders & Radii */
+  --radius:    4px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 [data-theme="dark"] {
-  --color-bg:      #1a1a1a;
-  --color-text:    #f5f5f5;
-  --color-surface: #2a2a2a;
-  --color-border:  #3a3a3a;
+  --color-bg:         #1a1a1a;
+  --color-bg-alt:     #242424;
+  --color-text:       #f5f5f5;
+  --color-text-muted: #a0a0a0;
+  --color-surface:    #2a2a2a;
+  --color-border:     #3a3a3a;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 * { box-sizing: border-box; }
+
 html, body {
   height: 100%;
   margin: 0;
 }
+
 body, .app-shell {
   background: var(--color-bg);
   color: var(--color-text);
@@ -43,37 +79,138 @@ body, .app-shell {
   min-height: 100vh;
 }
 
-.app-header, .layout__header  {
+.app-header, .layout__header {
   flex: 0 0 64px;
   display: flex;
   align-items: center;
   gap: var(--space-4);
   padding: 0 var(--space-4);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-white);
+  box-shadow: var(--shadow-sm);
 }
-.layout__title   { margin: 0; font-size: 18px; }
-.layout__nav     { display: flex; gap: var(--space-3); margin-left: auto; }
-.layout__nav a   { color: #fff; text-decoration: none; }
-.layout__nav a[aria-current="page"] { border-bottom: 2px solid var(--color-gold); }
 
-.app-body        { display: flex; flex: 1 1 auto; min-height: 0; }
-.app-sidebar, .layout__sidebar { flex: 0 0 240px; padding: var(--space-3); border-right: 1px solid var(--color-border); background: var(--color-surface); }
-.app-main, .layout__main    { flex: 1 1 auto; padding: var(--space-4); overflow-y: auto; }
-.app-footer, .layout__footer  { flex: 0 0 40px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--color-border); }
+.layout__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
 
-.dashboard-grid, .stat-grid { display: flex; flex-wrap: wrap; gap: var(--space-4); }
-.stat-card { flex: 1 1 calc((100% - var(--space-4) * 2) / 3); min-width: 240px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-3); }
-.stat-card--warn { border-color: var(--color-warning); }
-.stat-card h3    { margin: 0; font-size: 13px; opacity: 0.7; }
-.stat-card p     { margin: var(--space-2) 0 0; font-size: 22px; font-weight: 700; }
+.layout__nav {
+  display: flex;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.layout__nav a {
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.layout__nav a[aria-current="page"] {
+  border-bottom: 2px solid var(--color-gold);
+}
+
+.app-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-sidebar, .layout__sidebar {
+  flex: 0 0 240px;
+  padding: var(--space-3);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.app-main, .layout__main {
+  flex: 1 1 auto;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.app-footer, .layout__footer {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.dashboard-grid, .stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.stat-card {
+  flex: 1 1 calc((100% - var(--space-4) * 2) / 3);
+  min-width: 240px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card--warn {
+  border-color: var(--color-warning);
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.stat-card p {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
 
 /* TICKET-ADV101 / ADV105 — live feed slide-in */
-#trade-feed { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); max-height: 50vh; overflow-y: auto; }
-.trade-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-2) var(--space-3); animation: slide-in 0.3s ease-out; }
-.trade-card--matched { border-left: 4px solid var(--color-success); }
-.trade-card--break   { border-left: 4px solid var(--color-danger); }
-@keyframes slide-in  { from { transform: translateX(-10%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+#trade-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  max-height: 50vh;
+  overflow-y: auto;
+}
 
-button { padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border); background: transparent; color: inherit; border-radius: var(--radius); cursor: pointer; }
-:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+.trade-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  animation: slide-in 0.3s ease-out;
+}
+
+.trade-card--matched {
+  border-left: 4px solid var(--color-success);
+}
+
+.trade-card--break {
+  border-left: 4px solid var(--color-danger);
+}
+
+@keyframes slide-in {
+  from { transform: translateX(-10%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+button {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: inherit;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
