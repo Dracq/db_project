@@ -13,6 +13,10 @@ function Trades() {
   const [page, setPage] = useState(0);
   const [data, setData] = useState({ items: [], totalPages: 0 });
 
+  const handleRowClick = React.useCallback((id) => {
+    console.log(id);
+  }, []);
+
   // TODO(TICKET-ADV114 + ADV117): useEffect that:
   //   - builds a query string from `page` and `debounced` (status filter)
   //   - calls api.listTrades(params) and stores the response in `data`
@@ -38,7 +42,7 @@ function Trades() {
         ]} />
         <DataTable.Body
           rows={data.items}
-          render={(row) => <TradeRow trade={row} onClick={() => console.log(row.id)} />}
+          render={(row) => <TradeRow trade={row} onClick={handleRowClick} />}
         />
         <DataTable.Pagination
           page={page}
