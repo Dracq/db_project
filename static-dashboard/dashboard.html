@@ -2,6 +2,8 @@
 <!--
 ============================================================================
 TICKET-ADV098 — Flexbox page shell (sidebar + header + main + footer)
+TICKET-ADV099 — CSS custom properties (design tokens)
+TICKET-ADV100 — Dark/light theme toggle with zero FOUC
 Semantic HTML5 (header/nav/main/section/article/aside/footer)
 ARIA roles + aria-live for the trade feed
 ============================================================================
@@ -11,6 +13,12 @@ ARIA roles + aria-live for the trade feed
   <meta charset="utf-8" />
   <title>ReconX (static) — Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    (function () {
+      var stored = localStorage.getItem('reconx-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', stored);
+    })();
+  </script>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="app-shell">
@@ -21,7 +29,7 @@ ARIA roles + aria-live for the trade feed
       <a href="trades.html">Trades</a>
       <a href="recon.html">Recon</a>
     </nav>
-    <button id="theme-toggle" aria-label="Toggle light/dark theme">🌗</button>
+    <button id="theme-toggle" aria-label="Toggle light/dark theme" aria-pressed="false">🌗</button>
   </header>
 
   <div class="app-body">
