@@ -1,4 +1,4 @@
-// TICKET-ADV104 / TICKET-ADV105 — EventSource live feed with badge status and prepend logic.
+// TICKET-ADV104 / TICKET-ADV105 — EventSource live feed with prepend & animation hardening.
 (function () {
   const feed = document.getElementById('trade-feed');
   if (!feed) return;
@@ -10,6 +10,70 @@
     statusBadge.textContent = text;
     statusBadge.className = 'badge badge--' + stateClass;
   }
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  const qtyFormatter = new Intl.NumberFormat('en-US');
+  const priceFormatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
+
+  function prependTradeRow(trade) {
+    if (!trade) return;
+
+    const rawStatus = (trade.status || '').toUpperCase();
+    let statusModifier = 'trade-card--pending';
+    if (rawStatus === 'MATCHED') {
+      statusModifier = 'trade-card--matched';
+    } else if (rawStatus === 'UNMATCHED' || rawStatus === 'BREAK') {
+      statusModifier = 'trade-card--break';
+    }
+
+    const row = document.createElement('article');
+    row.className = `trade-card ${statusModifier} trade-card--new`;
+
+    const tradeRef = escapeHtml(trade.tradeRef || 'N/A');
+    const symbol = escapeHtml(trade.symbol || trade.instrumentSymbol || 'N/A');
+    const qtyVal = trade.qty != null ? trade.qty : trade.quantity;
+    const qty = qtyVal != null ? qtyFormatter.format(qtyVal) : '0';
+    const price = trade.price != null ? priceFormatter.format(trade.price) : '0.00';
+    const status = escapeHtml(rawStatus);
+
+    row.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>${tradeRef}</strong>
+        <span style="font-size:12px; font-weight:600;">[${status}]</span>
+      </div>
+      <div style="margin-top:4px; font-size:13px; color:var(--color-text-muted);">
+        <span><strong>Symbol:</strong> ${symbol}</span> ·
+        <span><strong>Qty:</strong> ${qty}</span> ·
+        <span><strong>Price:</strong> ${price}</span>
+      </div>
+    `;
+
+    feed.prepend(row);
+
+    // Remove --new modifier after entrance completes
+    setTimeout(() => {
+      row.classList.remove('trade-card--new');
+    }, 500);
+
+    // DOM cap: maximum 50 cards
+    while (feed.children.length > 50) {
+      feed.lastElementChild.remove();
+    }
+  }
+
+  window.prependTradeRow = prependTradeRow;
 
   const STREAM_URL = '/api/v1/trades/stream';
   let sse = null;
@@ -25,18 +89,14 @@
       sse.onmessage = function (event) {
         try {
           const trade = JSON.parse(event.data);
-          if (window.prependTradeRow) {
-            window.prependTradeRow(trade);
-          } else {
-            prependFallback(trade);
-          }
+          prependTradeRow(trade);
         } catch (err) {
           console.error('Error parsing SSE event data:', err);
         }
       };
 
       sse.onerror = function () {
-        // Critical: Do NOT construct new EventSource here — browser auto-reconnects with backoff.
+        // Critical: Do NOT call new EventSource() here — browser auto-reconnects with backoff.
         updateStatus('Reconnecting...', 'reconnecting');
       };
     } catch (e) {
@@ -55,25 +115,9 @@
 
     demoEvents.forEach((e, i) => {
       setTimeout(() => {
-        if (window.prependTradeRow) {
-          window.prependTradeRow(e);
-        } else {
-          prependFallback(e);
-        }
+        prependTradeRow(e);
       }, 500 * (i + 1));
     });
-  }
-
-  function prependFallback(trade) {
-    const el = document.createElement('article');
-    el.className = 'trade-card trade-card--' + (trade.status ? trade.status.toLowerCase() : 'matched');
-    el.innerHTML = `
-      <strong>${trade.tradeRef || ''}</strong>
-      <span> ${trade.symbol || ''} </span>
-      <span> qty=${trade.qty || 0} </span>
-      <span> price=${trade.price || 0} </span>
-      <span> [${trade.status || ''}]</span>`;
-    feed.prepend(el);
   }
 
   window.addEventListener('beforeunload', () => {
