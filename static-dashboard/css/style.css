@@ -5,6 +5,7 @@
    TICKET-ADV101 — Real-time trade feed area with slide-in animation
    TICKET-ADV102 — CSS animations: fade-in, slide-in, pulse & reduced motion
    TICKET-ADV103 — Responsive breakpoints (desktop -> tablet -> mobile)
+   TICKET-ADV104 — SSE connection badge styling
    BEM naming: block__element--modifier
    ============================================================================ */
 :root {
@@ -169,7 +170,41 @@ body, .app-shell {
   font-weight: 700;
 }
 
-/* TICKET-ADV101 / ADV102 — Real-time trade feed area & animation library */
+/* TICKET-ADV101 / ADV102 / ADV104 — Real-time trade feed & status badge */
+.feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.feed-header h2 {
+  margin: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.badge--live {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.badge--reconnecting {
+  background: var(--color-warning);
+  color: var(--color-text);
+}
+
+.badge--connecting {
+  background: var(--color-slate);
+  color: var(--color-white);
+}
+
 #trade-feed, .trade-feed {
   display: flex;
   flex-direction: column;

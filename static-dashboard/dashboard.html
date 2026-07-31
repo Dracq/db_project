@@ -6,6 +6,8 @@ TICKET-ADV099 — CSS custom properties (design tokens)
 TICKET-ADV100 — Dark/light theme toggle with zero FOUC
 TICKET-ADV101 — Real-time trade feed area with slide-in animation
 TICKET-ADV102 — CSS animations: fade-in, slide-in, pulse & reduced motion
+TICKET-ADV103 — Responsive breakpoints (desktop -> tablet -> mobile)
+TICKET-ADV104 — Server-Sent Events subscription & status badge
 Semantic HTML5 (header/nav/main/section/article/aside/footer)
 ARIA roles + aria-live for the trade feed
 ============================================================================
@@ -60,7 +62,10 @@ ARIA roles + aria-live for the trade feed
       </section>
 
       <section aria-labelledby="feed" class="feed-section">
-        <h2 id="feed">Live trade feed</h2>
+        <div class="feed-header">
+          <h2 id="feed">Live trade feed</h2>
+          <span id="sse-status" class="badge badge--connecting" role="status">Connecting...</span>
+        </div>
         <!-- aria-live so screen readers announce new trades -->
         <div id="trade-feed" class="trade-feed" role="status" aria-live="polite" aria-atomic="false"></div>
       </section>
