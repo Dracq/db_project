@@ -44,14 +44,16 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
     networks: [reconx]
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     image: ghcr.io/sidoncode/reconx-backend:latest
     container_name: reconx-backend
     depends_on:

@@ -11,6 +11,8 @@ public record TradeResponse(
     String counterpartyName,
     Long instrumentId,
     String instrumentSymbol,
+    String assetClass,
+    String side,
     BigDecimal quantity,
     BigDecimal price,
     LocalDate tradeDate,

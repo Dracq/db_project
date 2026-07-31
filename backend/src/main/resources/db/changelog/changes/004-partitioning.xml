@@ -28,6 +28,8 @@
         <sql splitStatements="false"><![CDATA[
             -- 1. Rename existing
             ALTER TABLE trades RENAME TO trades_legacy;
+            ALTER INDEX idx_trades_trade_date RENAME TO idx_trades_trade_date_legacy;
+            ALTER INDEX idx_trades_status RENAME TO idx_trades_status_legacy;
 
             -- 2. Create partitioned parent (same columns)
             CREATE TABLE trades (
@@ -75,7 +77,7 @@
             FROM trades_legacy;
 
             -- 7. Drop legacy table
-            DROP TABLE trades_legacy;
+            DROP TABLE trades_legacy CASCADE;
         ]]></sql>
         <rollback>
             <sql splitStatements="false"><![CDATA[

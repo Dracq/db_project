@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/reconx_uat
-    username: reconx_uat
-    password: reconx_uat
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:reconx_uat}
+    username: ${POSTGRES_USER:reconx_uat}
+    password: ${POSTGRES_PASSWORD:reconx_uat}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20

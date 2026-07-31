@@ -24,13 +24,18 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.context.annotation.Import;
+
 @WebMvcTest(TradeController.class)
+@Import(com.dbtraining.reconx.security.SecurityConfig.class)
 class TradeControllerWebMvcTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @MockBean  private TradeService tradeService;
     @MockBean  private TradeMapper tradeMapper;
+    @MockBean  private com.dbtraining.reconx.security.JwtTokenProvider jwtTokenProvider;
+    @MockBean  private org.springframework.data.jpa.mapping.JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
     private TradeRequest validRequest() {
         return new TradeRequest(
@@ -49,6 +54,7 @@ class TradeControllerWebMvcTest {
     void testCreateTrade_authenticated_returns201() throws Exception {
         Instant now = Instant.now();
         Trade trade = new Trade();
+        trade.setId(42L);
         trade.setTradeRef("TRD-20260315-9999");
 
         when(tradeService.create(any(), any())).thenReturn(trade);
@@ -69,7 +75,7 @@ class TradeControllerWebMvcTest {
                         now,
                         now));
 
-        mockMvc.perform(post("/api/v1/trades")
+        mockMvc.perform(post("/v1/trades")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest()))
                         .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
@@ -81,16 +87,17 @@ class TradeControllerWebMvcTest {
 
     @Test
     void testCreateTrade_unauthenticated_returns401() throws Exception {
-        mockMvc.perform(post("/api/v1/trades")
+        mockMvc.perform(post("/v1/trades")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(validRequest())))
+                        .content(objectMapper.writeValueAsString(validRequest()))
+                        .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "VIEWER")
     void testCreateTrade_viewerRole_returns403() throws Exception {
-        mockMvc.perform(post("/api/v1/trades")
+        mockMvc.perform(post("/v1/trades")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest()))
                         .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()))

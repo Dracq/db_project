@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
-import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name = "trades", indexes = {
@@ -18,7 +17,6 @@ import org.hibernate.envers.Audited;
     @Index(name = "idx_trades_status", columnList = "status")
 })
 @EntityListeners(AuditingEntityListener.class)
-@Audited
 @SQLRestriction("deleted_at IS NULL")
 public class Trade {
 
@@ -86,6 +84,7 @@ public class Trade {
     public Instant getCreatedAt()        { return createdAt; }
     public Instant getModifiedAt()       { return modifiedAt; }
 
+    public void setId(Long id)                { this.id = id; }
     public void setTradeRef(String v)         { this.tradeRef = v; }
     public void setInstrument(Instrument v)   { this.instrument = v; }
     public void setCounterparty(Counterparty v){ this.counterparty = v; }

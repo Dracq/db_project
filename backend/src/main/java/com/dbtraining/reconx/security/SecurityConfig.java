@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/v1/audit/**").hasAnyRole("RECON_ANALYST","ADMIN")
                 .anyRequest().authenticated()
             )
+            .exceptionHandling(e -> e.authenticationEntryPoint(new org.springframework.security.web.authentication.HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED)))
             .headers(h -> h.frameOptions(f -> f.disable()))   // for /h2 dev console
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

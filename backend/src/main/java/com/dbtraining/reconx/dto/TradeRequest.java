@@ -10,7 +10,13 @@ public record TradeRequest(
     String tradeRef,
     @NotNull Long counterpartyId,
     @NotNull Long instrumentId,
+    String assetClass,
+    String side,
     @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal quantity,
     @NotNull @DecimalMin(value = "0.0", inclusive = false) BigDecimal price,
     @NotNull @PastOrPresent LocalDate tradeDate
-) {}
+) {
+    public TradeRequest(String tradeRef, Long counterpartyId, Long instrumentId, BigDecimal quantity, BigDecimal price, LocalDate tradeDate) {
+        this(tradeRef, counterpartyId, instrumentId, "EQUITY", "BUY", quantity, price, tradeDate);
+    }
+}
