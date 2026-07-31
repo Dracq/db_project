@@ -3,7 +3,7 @@
    TICKET-ADV099 — CSS custom properties (design tokens)
    TICKET-ADV100 — Dark theme via data-theme
    TICKET-ADV101 — Real-time trade feed area with slide-in animation
-   TICKET-ADV102 — animations (fade-in, slide-in, pulse)
+   TICKET-ADV102 — CSS animations: fade-in, slide-in, pulse & reduced motion
    TICKET-ADV103 — responsive breakpoints (desktop -> tablet -> mobile)
    BEM naming: block__element--modifier
    ============================================================================ */
@@ -58,10 +58,6 @@
   --color-border:     #3a3a3a;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 * { box-sizing: border-box; }
@@ -171,7 +167,7 @@ body, .app-shell {
   font-weight: 700;
 }
 
-/* TICKET-ADV101 — Real-time trade feed area with slide-in animation */
+/* TICKET-ADV101 / ADV102 — Real-time trade feed area & animation library */
 #trade-feed, .trade-feed {
   display: flex;
   flex-direction: column;
@@ -193,9 +189,35 @@ body, .app-shell {
 .trade-card--break   { border-left: 4px solid var(--color-danger); }
 .trade-card--pending { border-left: 4px solid var(--color-warning); }
 
+.trade-card--new {
+  animation: slide-in 0.4s ease-out, fade-in 0.4s ease-out;
+}
+
+.alert--danger {
+  background: var(--color-surface);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Keyframe animations */
 @keyframes slide-in {
   from { transform: translateX(-20px); opacity: 0; }
   to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+  50%  { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
 }
 
 button {
@@ -210,4 +232,15 @@ button {
 :focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+/* Reduced motion accessibility override - MUST be at bottom of stylesheet */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }

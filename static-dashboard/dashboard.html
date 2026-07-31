@@ -5,6 +5,7 @@ TICKET-ADV098 — Flexbox page shell (sidebar + header + main + footer)
 TICKET-ADV099 — CSS custom properties (design tokens)
 TICKET-ADV100 — Dark/light theme toggle with zero FOUC
 TICKET-ADV101 — Real-time trade feed area with slide-in animation
+TICKET-ADV102 — CSS animations: fade-in, slide-in, pulse & reduced motion
 Semantic HTML5 (header/nav/main/section/article/aside/footer)
 ARIA roles + aria-live for the trade feed
 ============================================================================
@@ -44,6 +45,10 @@ ARIA roles + aria-live for the trade feed
     </aside>
 
     <main class="layout__main app-main" role="main">
+      <div class="alert alert--danger" role="alert">
+        <strong>Alert:</strong> Unmatched trades threshold exceeded (15 open breaks).
+      </div>
+
       <section aria-labelledby="kpi">
         <h2 id="kpi">Today at a glance</h2>
         <div class="stat-grid dashboard-grid">
