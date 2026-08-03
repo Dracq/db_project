@@ -178,5 +178,5 @@ bash scripts/smoke-test.sh
 Deutsche Bank — TDI 2026 Graduate Technical Training Programme (Advanced Track).
 
 - **Team Retrospective**: Read our team retrospective at [`docs/retrospective.md`](docs/retrospective.md).
-- **Demo Deck**: View our 10-slide demo deck outline at [`docs/demo-deck-outline.md`](docs/demo-deck-outline.md).
+- **Demo Deck**: View our 10-slide demo deck outline at [docs/demo-deck.pptx](docs/demo-deck.pptx).
 - **Demo Runsheet**: View our 20-minute live demo runsheet at [`docs/demo-runsheet.md`](docs/demo-runsheet.md).
