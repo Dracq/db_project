@@ -44,7 +44,7 @@ jobs:
           cache: maven
       - name: Liquibase validate
         working-directory: backend
-        run: ./mvnw -B liquibase:validate || true
+        run: ./mvnw -B liquibase:validate -Dliquibase.url=jdbc:postgresql://localhost:5432/reconx_test -Dliquibase.username=test -Dliquibase.password=test -Dliquibase.changeLogFile=classpath:db/changelog/db.changelog-master.xml
       - name: Build + test
         working-directory: backend
         run: ./mvnw -B verify
