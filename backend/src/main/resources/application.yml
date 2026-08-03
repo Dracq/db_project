@@ -40,15 +40,22 @@ spring:
       properties:
         spring.json.add.type.headers: false
         max.block.ms: 100
+        # ADV145 finding #3 — accepted: cheap idempotence guard for audit compliance
+        enable.idempotence: true
+        # ADV145 finding #4 — accepted: expose producer metrics to Prometheus for ADV141 panel
+        metric.reporters: io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics
     consumer:
       group-id: reconx-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.dbtraining.reconx.dto
+        spring.json.trusted.packages: "com.dbtraining.reconx.dto"
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.dbtraining.reconx.dto.TradeEvent
+        metric.reporters: io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics
+        # ADV145 finding #1 — accepted: prevent rebalance storms with slow JPA consumers
+        max.poll.records: 100
 
 server:
   servlet:
@@ -71,6 +78,9 @@ management:
       probes:
         enabled: true
   metrics:
+    binders:
+      kafka:
+        enabled: true
     distribution:
       percentiles-histogram:
         http.server.requests: true
